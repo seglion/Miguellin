@@ -137,17 +137,17 @@ const handleEnter = () => {
 .letter {
   display: inline-block;
   font-family: var(--font-brand);
-  font-size: clamp(3rem, 12vw, 8rem);
+  font-size: clamp(2rem, 10vw, 8rem);
   font-weight: 900;
-  padding: 10px 20px;
+  padding: 8px 15px;
   background: #fff;
   color: #000;
   text-transform: uppercase;
   position: relative;
   transition: all 0.2s ease;
   user-select: none;
-  border: 4px solid #000;
-  box-shadow: 8px 8px 0 #000;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 #000;
 }
 
 /* Halftone Dot Overlay */
@@ -331,7 +331,31 @@ const handleEnter = () => {
 
 @media (max-width: 768px) {
   .brand-name {
-    font-size: 5rem;
+    gap: 5px;
+  }
+  
+  .letter-row {
+     gap: 2px;
+  }
+
+  .letter {
+    font-size: clamp(1.5rem, 8vw, 3rem);
+    padding: 6px 10px;
+    border-width: 2px;
+    box-shadow: 3px 3px 0 #000;
+  }
+
+  /* Reduce rotations and offsets for mobile to prevent overflow */
+  .cutout-1 { transform: rotate(-2deg) translateY(2px); }
+  .cutout-4 { transform: rotate(2deg) translateY(-4px); }
+  .cutout-6 { transform: rotate(3deg) translateX(4px); }
+  .cutout-7 { transform: rotate(-2deg) translateY(4px); }
+  .cutout-9 { clip-path: none; transform: rotate(-1deg); }
+
+  .punk-meta {
+    font-size: 0.6rem;
+    margin-top: 15px;
+    letter-spacing: 0.1em;
   }
   
   .enter-btn {
