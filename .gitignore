@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+.vercel
+
+# Data Exclusions
+public/data/images
+public/data/test_images
+public/data/upload_cache.json
