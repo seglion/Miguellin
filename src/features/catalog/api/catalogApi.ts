@@ -74,7 +74,7 @@ class CatalogService {
 
     private calculateEuroPrice(yuan: number): number {
         // Calculation: ((Yuan + 10 shipping) * 0.15 rate * 1.10 margin) + 8 profit
-        const basePrice = (yuan + 10) * 0.145 * 1.95;
+        const basePrice = (yuan + 10) * 0.145 * 1.095;
         return Math.ceil(basePrice + 8);
     }
 
