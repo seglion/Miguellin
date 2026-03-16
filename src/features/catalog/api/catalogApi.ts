@@ -28,9 +28,9 @@ class CatalogService {
 
         // Literal "BATCH" keyword cleanup if it's still there as a separate word at start
         cleaned = cleaned.replace(/^BATCH\s+/i, '');
-        
+
         return cleaned;
-    }    private extractYuanPrice(title: string | null | undefined): number | undefined {
+    } private extractYuanPrice(title: string | null | undefined): number | undefined {
         if (!title) return undefined;
         // Robust patterns based on audit of 5900+ items
         const patterns = [
@@ -51,16 +51,16 @@ class CatalogService {
             // Folder start pattern: /190 SS ... or /260 TG ...
             /(?:^|\/)\s*(\d{3})\s+[A-Z]/i
         ];
-        
+
         for (const pattern of patterns) {
             const match = title.match(pattern);
             if (match && match[1]) {
                 const rawValue = match[1];
                 let value = parseInt(rawValue, 10);
-                
+
                 // Heuristic filtering for noisy patterns
                 const isExplicit = pattern.source.includes('Y') || pattern.source.includes('P') || pattern.source.includes('CNY') || pattern.source.includes('[¥￥]');
-                
+
                 if (isExplicit) {
                     if (value >= 10 && value <= 5000) return value;
                 } else {
@@ -74,7 +74,7 @@ class CatalogService {
 
     private calculateEuroPrice(yuan: number): number {
         // Calculation: ((Yuan + 10 shipping) * 0.15 rate * 1.10 margin) + 8 profit
-        const basePrice = (yuan + 10) * 0.15 * 1.10;
+        const basePrice = (yuan + 10) * 0.145 * 1.95;
         return Math.ceil(basePrice + 8);
     }
 
@@ -98,7 +98,7 @@ class CatalogService {
                 const originalTitle = album.title;
                 const description = album.description || '';
                 const photoPath = album.photos && album.photos.length > 0 ? album.photos[0].local_path : '';
-                
+
                 // Priority for Price Extraction:
                 // 1. Photo Path (contains vendor/batch folders which are very reliable)
                 // 2. Original Title
@@ -120,7 +120,7 @@ class CatalogService {
 
                 // Prepare clean title: Use pre-processed title from JSON if available
                 let displayTitle = album.title || originalTitle;
-                
+
                 // If it's the original title (not pre-processed), apply fallback cleaning
                 if (!album.title) {
                     displayTitle = displayTitle
@@ -166,8 +166,8 @@ class CatalogService {
         return Object.values(catalog).filter((album: Album) => {
             // Priority 1: Direct link via sub_category or parent_category
             return album.sub_category === targetCategory ||
-                   album.category === targetCategory ||
-                   album.parent_category === targetCategory;
+                album.category === targetCategory ||
+                album.parent_category === targetCategory;
         });
     }
 
