@@ -28,22 +28,7 @@ class CatalogService {
 
         // Literal "BATCH" keyword cleanup if it's still there as a separate word at start
         cleaned = cleaned.replace(/^BATCH\s+/i, '');
-
-        // 4. High-priority Model Normalization (Canonical Names)
-        if (cleaned.includes('AIR FORCE') || cleaned.match(/\bAF\s*1\b/i)) {
-            return 'AIR FORCE 1';
-        }
-
-        if (cleaned.includes('VOMERO')) return 'VOMERO 5';
-        if (cleaned.includes('DUNK')) return 'DUNK';
-        if (cleaned.includes('KOBE')) return 'KOBE';
-        if (cleaned.includes('AIR MAX')) return 'AIR MAX';
-        if (cleaned.includes('SAMBA')) return 'SAMBA';
-        if (cleaned.includes('CAMPUS')) return 'CAMPUS';
-        if (cleaned.includes('GAZELLE')) return 'GAZELLE';
-        if (cleaned.includes('JORDAN 1') || cleaned.includes('AJ1')) return 'JORDAN 1';
-        if (cleaned.includes('JORDAN 4') || cleaned.includes('AJ4')) return 'JORDAN 4';
-
+        
         return cleaned;
     }
 
@@ -181,19 +166,9 @@ class CatalogService {
 
         return Object.values(catalog).filter((album: Album) => {
             // Priority 1: Direct link via sub_category or parent_category
-            if (album.sub_category === targetCategory ||
-                album.category === targetCategory ||
-                album.parent_category === targetCategory) {
-                return true;
-            }
-
-            // Priority 2: Title matching as fallback for models with missing subcategory links
-            const modelNames = ['AIR FORCE 1', 'AIR MAX', 'DUNK', 'JORDAN 1', 'JORDAN 4', 'VOMERO 5', 'KOBE'];
-            if (modelNames.includes(targetCategory)) {
-                return album.title.toUpperCase().includes(targetCategory);
-            }
-
-            return false;
+            return album.sub_category === targetCategory ||
+                   album.category === targetCategory ||
+                   album.parent_category === targetCategory;
         });
     }
 
