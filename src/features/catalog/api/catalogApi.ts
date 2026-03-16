@@ -36,10 +36,12 @@ class CatalogService {
         // Extract price like "250Y", "Y250", "P250", "250P", "250 yuan", "¥250", "￥250", "250CNY"
         const patterns = [
             /\b(\d+)\s*CNY\b/i,
-            /(\d+)\s*Y\b/i,           // 250Y
-            /\bY\s*(\d+)/i,           // Y250
-            /(?<![a-zA-Z])P\s*(\d+)/i, // P250
-            /\b(\d+)\s*P\b/i,          // 250P (often used in some stores)
+            /(\d+)\s*Y(?![a-z0-9])/i,  // 250Y (Allow boundary or non-alphanumeric)
+            /(\d+)\s*Y[A-Z0-9]{1,10}/i, // 160YS2TOP, 150YSS (Match price followed by arbitrary alphanumeric batch/noise)
+            /\bY\s*(\d+)/i,             // Y250
+            /(?<![a-zA-Z])P\s*(\d+)/i,   // P250
+            /(\d+)\s*P(?![a-z0-9])/i,   // 250P
+            /(\d+)\s*P[A-Z0-9]{1,10}/i, // 250PSS, 250PVT
             /\b(\d+)\s*yuan\b/i,
             /[¥￥]\s*(\d+)/
         ];
