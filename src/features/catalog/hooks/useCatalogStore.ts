@@ -7,16 +7,45 @@ export const useCatalogStore = defineStore('catalog', {
         categories: [] as string[], // Legacy flat list for breadcrumbs/compatibility
         categoryItems: [] as CategoryItem[], // hierarchical menu
         selectedCategory: null as string | null,
+        searchQuery: '',
         albums: [] as Album[],
+        allAlbums: [] as Album[],
         selectedAlbum: null as Album | null,
         isViewerOpen: false,
         isLoading: false,
     }),
 
+    getters: {
+        displayAlbums(state): Album[] {
+            let filtered = [] as Album[];
+            
+            if (state.searchQuery.trim().length >= 2) {
+                // Global search across all albums
+                const query = state.searchQuery.toLowerCase().trim();
+                filtered = state.allAlbums.filter(album => 
+                    album.title.toLowerCase().includes(query) || 
+                    (album.originalTitle && album.originalTitle.toLowerCase().includes(query)) ||
+                    (album.description && album.description.toLowerCase().includes(query)) ||
+                    album.id.toString().includes(query)
+                );
+            } else {
+                // View specific category
+                filtered = state.albums;
+            }
+
+            // Always sort by price descending (most expensive first)
+            return [...filtered].sort((a, b) => (b.price || 0) - (a.price || 0));
+        }
+    },
+
     actions: {
         async init() {
             this.isLoading = true;
             this.categoryItems = await catalogService.fetchCategories();
+            
+            // Load full catalog for search cache
+            const fullCatalog = await catalogService.fetchCatalog();
+            this.allAlbums = Object.values(fullCatalog);
 
             // Derive a flat list for simple usage if needed
             const flatten = (items: CategoryItem[]): string[] => {
@@ -37,6 +66,7 @@ export const useCatalogStore = defineStore('catalog', {
 
         async selectCategory(category: string) {
             this.selectedCategory = category;
+            this.searchQuery = ''; // Reset search on navigation
             await this.loadAlbums();
         },
 

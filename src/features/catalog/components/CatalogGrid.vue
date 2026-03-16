@@ -14,7 +14,7 @@ const catalogStore = useCatalogStore();
 
     <div v-else class="catalog-grid">
       <ProductCard 
-        v-for="album in catalogStore.albums" 
+        v-for="album in catalogStore.displayAlbums" 
         :key="album.id" 
         :album="album"
         :class="{ 'tall': Math.random() > 0.8 }"

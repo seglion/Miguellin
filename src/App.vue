@@ -90,6 +90,21 @@ watch([() => authStore.isLoggedIn, () => catalogStore.isViewerOpen], ([shown, vi
         <aside class="sidebar">
           <div class="logo desktop-only">MIGUEL LIN</div>
           
+          <!-- Reactive Search -->
+          <div class="search-container">
+            <input 
+              v-model="catalogStore.searchQuery" 
+              type="text" 
+              placeholder="SEARCH CATALOG / BUSCAR..."
+              class="search-input"
+            />
+            <button 
+              v-if="catalogStore.searchQuery" 
+              @click="catalogStore.searchQuery = ''" 
+              class="clear-search"
+            >✕</button>
+          </div>
+
           <nav class="categories">
             <div v-for="parent in catalogStore.categoryItems" :key="parent.name" class="cat-group">
               <div 
@@ -204,7 +219,49 @@ watch([() => authStore.isLoggedIn, () => catalogStore.isViewerOpen], ([shown, vi
   font-size: 2rem;
   letter-spacing: -2px;
   color: var(--color-accent);
-  margin-bottom: 40px;
+  margin-bottom: 20px;
+}
+
+.search-container {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--color-bg-alt);
+  border: 2px solid var(--color-border);
+  padding: 12px 15px;
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  outline: none;
+  transition: all 0.3s ease;
+  clip-path: polygon(0% 0%, 100% 5%, 98% 100%, 2% 95%);
+}
+
+.search-input:focus {
+  border-color: var(--color-accent);
+  background: rgba(var(--color-accent-rgb), 0.05);
+  transform: rotate(-0.5deg) scale(1.02);
+}
+
+.clear-search {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 5px;
+}
+
+.clear-search:hover {
+  color: var(--color-accent);
 }
 
 .desktop-only {
