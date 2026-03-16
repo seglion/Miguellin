@@ -141,8 +141,7 @@ class CatalogService {
                     parent_category: this.cleanName(album.parent_category),
                     sub_category: this.cleanName(album.sub_category),
                     batch: batch,
-                    price: finalPrice,
-                    yuanPrice: yuanPrice
+                    price: finalPrice
                 };
 
                 // Specific override for SALOMON XT-6 requested by user

@@ -52,30 +52,37 @@ const getImageUrl = (photo: any) => {
         
         <aside class="album-sidebar">
           <div class="meta">
-            <span class="category">{{ catalogStore.selectedAlbum.category }}</span>
+            <div class="category-tag sticker">{{ catalogStore.selectedAlbum.category }}</div>
             <h2 class="title">{{ catalogStore.selectedAlbum.title }}</h2>
-            <div v-if="catalogStore.selectedAlbum.price" class="price">
-              <span class="label">PRICE</span>
+            
+            <div v-if="catalogStore.selectedAlbum.price" class="price-box jagged-edge">
+              <span class="label">FINAL_PRICE</span>
               <span class="value">€{{ catalogStore.selectedAlbum.price }}</span>
             </div>
+            
             <div v-if="catalogStore.selectedAlbum.batch" class="batch-detail">
               <span class="label">BATCH / LOTE</span>
               <span class="value">{{ catalogStore.selectedAlbum.batch }}</span>
             </div>
+            
             <div class="id-info">
-                <span>REF: {{ catalogStore.selectedAlbum.id }}</span>
-                <span v-if="catalogStore.selectedAlbum.yuanPrice">ORIG: {{ catalogStore.selectedAlbum.yuanPrice }}Y</span>
+                <span class="marker">REF_</span>
+                <span>{{ catalogStore.selectedAlbum.id }}</span>
             </div>
           </div>
           
-          <div class="description" v-if="filteredDescription">
-            <p>{{ filteredDescription }}</p>
+          <div class="description-box" v-if="filteredDescription">
+            <div class="desc-label">DESCRIPTION //</div>
+            <p class="desc-text">{{ filteredDescription }}</p>
           </div>
+
+          <div class="sidebar-decoration halftone"></div>
         </aside>
 
         <div class="photo-gallery">
           <div v-for="(photo, index) in catalogStore.selectedAlbum.photos" :key="photo.id" class="photo-item">
             <img :src="getImageUrl(photo)" :alt="`${catalogStore.selectedAlbum.title} image ${Number(index) + 1}`" loading="lazy" />
+            <div class="image-label">ML_ARCHIVE_IMG_{{ index + 1 }}</div>
           </div>
         </div>
       </div>
@@ -90,12 +97,12 @@ const getImageUrl = (photo: any) => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.98);
-  z-index: 1000;
+  background: rgba(240, 240, 240, 0.95);
+  z-index: 2000;
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(8px);
 }
 
 .viewer-content {
@@ -108,113 +115,146 @@ const getImageUrl = (photo: any) => {
 
 .close-btn {
   position: absolute;
-  top: 40px;
-  right: 40px;
-  background: none;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+  top: 30px;
+  right: 30px;
+  background: #000;
+  border: none;
+  color: #fff;
   padding: 10px 20px;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
   cursor: pointer;
-  z-index: 10;
-  transition: all 0.3s var(--transition-main);
+  z-index: 50;
+  box-shadow: 4px 4px 0 var(--color-accent);
 }
 
 .close-btn:hover {
   background: var(--color-accent);
-  color: #000;
-  border-color: var(--color-accent);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #000;
 }
 
 .album-sidebar {
-  width: 400px;
+  width: 450px;
   height: 100%;
-  padding: 80px 60px;
-  border-right: 1px solid var(--color-border);
+  padding: 80px 50px;
+  border-right: 6px solid #000;
   display: flex;
   flex-direction: column;
   gap: 40px;
-  background: var(--color-bg);
+  background: #fff;
+  position: relative;
+  z-index: 20;
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
-.meta .category {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--color-accent);
-  letter-spacing: 2px;
-  display: block;
-  margin-bottom: 10px;
+.category-tag {
+  margin-bottom: 20px;
+  display: inline-block;
 }
 
 .meta .title {
-  font-size: 3rem;
-  line-height: 1;
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  line-height: 0.9;
   margin-bottom: 30px;
+  color: #000;
+  text-transform: uppercase;
+  word-break: break-word;
 }
 
-.price {
-  margin-top: 20px;
+.price-box {
+  background: #000;
+  color: #fff;
+  padding: 20px 30px;
   display: flex;
   flex-direction: column;
+  gap: 5px;
+  width: fit-content;
+  margin-bottom: 30px;
+  box-shadow: 8px 8px 0 var(--color-vibrant-1);
 }
 
-.price .label {
+.price-box .label {
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  color: var(--color-text-secondary);
+  color: var(--color-vibrant-2);
+  font-weight: 900;
 }
 
-.price .value {
+.price-box .value {
   font-family: var(--font-display);
-  font-size: 2.5rem;
-  color: var(--color-text-primary);
+  font-size: 3rem;
 }
 
 .batch-detail {
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
+  gap: 5px;
 }
 
 .batch-detail .label {
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  color: var(--color-accent);
-  letter-spacing: 1px;
+  font-weight: 900;
+  color: #666;
 }
 
 .batch-detail .value {
-  font-family: var(--font-mono);
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #000;
-  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
   background: var(--color-accent);
-  padding: 8px 15px;
-  display: inline-block;
+  color: #fff;
+  padding: 5px 15px;
   width: fit-content;
-  margin-top: 5px;
-  box-shadow: 0 0 20px rgba(195, 255, 0, 0.2);
+  border: 3px solid #000;
+  transform: rotate(-1deg);
 }
 
 .id-info {
-    margin-top: 20px;
-    display: flex;
-    gap: 20px;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--color-text-secondary);
-    opacity: 0.6;
+  margin-top: 30px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #999;
 }
 
-.description {
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
-  white-space: pre-wrap;
-  max-height: 300px;
-  overflow-y: auto;
-  padding-right: 10px;
+.yuan-val {
+  color: var(--color-accent);
+  margin-left: 10px;
+}
+
+.description-box {
+  background: #f9f9f9;
+  border: 3px solid #000;
+  padding: 20px;
+  position: relative;
+  clip-path: polygon(0% 0%, 100% 2%, 98% 100%, 2% 98%);
+}
+
+.desc-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.desc-text {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+.sidebar-decoration {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  z-index: -1;
 }
 
 .photo-gallery {
@@ -224,77 +264,94 @@ const getImageUrl = (photo: any) => {
   padding: 80px;
   display: flex;
   flex-direction: column;
-  gap: 80px;
+  gap: 100px;
   align-items: center;
+  background-image: 
+    linear-gradient(rgba(200,200,200,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,200,200,0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 .photo-item {
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
+  position: relative;
 }
 
 .photo-item img {
   width: 100%;
   height: auto;
   display: block;
-  border: 1px solid var(--color-border);
+  border: 5px solid #000;
+  box-shadow: 15px 15px 0 rgba(0,0,0,0.1);
+  background: #fff;
 }
 
-/* Responsive */
+.image-label {
+  position: absolute;
+  bottom: -30px;
+  right: 0;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 900;
+  color: #999;
+}
+
+/* Responsive Structural Fix */
 @media (max-width: 900px) {
   .viewer-content {
-    flex-direction: column;
-    overflow-y: auto;
+    flex-direction: column !important;
+    overflow-y: auto !important;
   }
 
   .album-sidebar {
-    width: 100%;
-    height: auto;
-    padding: 60px 30px 40px;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
+    width: 100% !important;
+    height: auto !important;
+    padding: 100px 30px 40px !important;
+    border-right: none !important;
+    border-bottom: 6px solid #000 !important;
+    flex-shrink: 0 !important;
   }
 
   .meta .title {
-    font-size: 2.2rem;
-    margin-bottom: 20px;
+    font-size: 2.5rem !important;
+    margin-bottom: 20px !important;
   }
 
-  .price .value {
-    font-size: 2rem;
+  .price-box .value {
+    font-size: 2.2rem !important;
   }
 
   .photo-gallery {
-    padding: 40px 20px;
-    gap: 40px;
-    height: auto;
-    overflow-y: visible;
+    padding: 60px 20px !important;
+    gap: 60px !important;
+    height: auto !important;
+    overflow-y: visible !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
   }
 
   .close-btn {
-    top: 20px;
-    right: 20px;
-    padding: 8px 15px;
-    font-size: 0.6rem;
+    top: 20px !important;
+    right: 20px !important;
+    padding: 8px 15px !important;
+    font-size: 0.8rem !important;
   }
 }
 
 /* Transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.4s ease;
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
 }
-
-.fade-enter-from,
-.fade-leave-to {
+.fade-enter-from, .fade-leave-to {
   opacity: 0;
 }
 
-/* Scrollbar for gallery */
-.photo-gallery::-webkit-scrollbar {
-  width: 4px;
+/* Scrollbar */
+.photo-gallery::-webkit-scrollbar, .album-sidebar::-webkit-scrollbar, .viewer-content::-webkit-scrollbar {
+  width: 8px;
 }
-.photo-gallery::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+.photo-gallery::-webkit-scrollbar-thumb, .album-sidebar::-webkit-scrollbar-thumb, .viewer-content::-webkit-scrollbar-thumb {
+  background: #000;
 }
 </style>

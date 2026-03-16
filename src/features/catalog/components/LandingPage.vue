@@ -18,8 +18,8 @@ const handleEnter = () => {
 
 <template>
   <section class="landing-page">
-    <div class="mesh-background"></div>
-    <div class="vignette"></div>
+    <div class="newsprint-texture"></div>
+    <div class="halftone-overlay"></div>
     
     <div class="content-wrapper">
       <div class="brand-container">
@@ -38,38 +38,31 @@ const handleEnter = () => {
             <span class="letter cutout-9">N</span>
           </div>
         </h1>
-        <div class="glitch-text punk-meta" data-text="SPRING ARCHIVE 2024">SPRING ARCHIVE 2024</div>
+        <div class="sticker-tag punk-meta">SPRING ARCHIVE 2024</div>
       </div>
 
       <div class="cta-container">
-        <div class="auth-box">
+        <div class="auth-box jagged-box">
           <input 
             type="password" 
             v-model="password" 
-            placeholder="ENTER ACCESS CODE"
+            placeholder="ACCESS CODE / CLAVE"
             @keyup.enter="handleEnter"
             class="auth-input"
             :class="{ 'error-shake': authStore.error }"
           />
           <button class="enter-btn" @click="handleEnter">
-            <span class="btn-content">ACCESS ARCHIVE</span>
-            <span class="btn-glare"></span>
+            <span class="btn-content">ENTER ARCHIVE</span>
           </button>
           <div v-if="authStore.error" class="auth-error">
             {{ authStore.error }}
           </div>
         </div>
-        <p class="tagline">Premium curation of high-end collectibles and street apparel.</p>
+        <p class="tagline">PREMIUM CURATION OF HIGH-END COLLECTIBLES AND STREET APPAREL.</p>
       </div>
     </div>
 
-    <div class="bottom-bar">
-      <div class="status-indicator">
-        <span class="dot"></span>
-        SYSTEM READY
-      </div>
-      <div class="scroll-hint">SCROLL TO DISCOVER</div>
-    </div>
+    <div class="decoration hand-drawn-arrow"></div>
   </section>
 </template>
 
@@ -77,7 +70,7 @@ const handleEnter = () => {
 .landing-page {
   width: 100vw;
   height: 100vh;
-  background: #000;
+  background: var(--color-bg);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -86,26 +79,19 @@ const handleEnter = () => {
   position: relative;
 }
 
-.mesh-background {
+.newsprint-texture {
   position: absolute;
   inset: 0;
-  background: 
-    radial-gradient(at 0% 0%, rgba(157, 0, 255, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(0, 242, 255, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(195, 255, 0, 0.05) 0px, transparent 40%);
-  filter: blur(80px);
-  animation: backgroundPulse 10s infinite alternate ease-in-out;
+  background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+  opacity: 0.05;
+  pointer-events: none;
 }
 
-@keyframes backgroundPulse {
-  0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(1.1); opacity: 1; }
-}
-
-.vignette {
+.halftone-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
+  background-image: radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1px);
+  background-size: 8px 8px;
   pointer-events: none;
 }
 
@@ -114,19 +100,24 @@ const handleEnter = () => {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 60px;
+  gap: 50px;
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
 }
 
 /* Spider-Punk Comic Styles */
 .brand-container {
-  perspective: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .spiderpunk {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
 }
 
 .letter-row {
@@ -136,125 +127,127 @@ const handleEnter = () => {
 
 .letter {
   display: inline-block;
-  font-family: var(--font-brand);
-  font-size: clamp(2rem, 10vw, 8rem);
-  font-weight: 900;
-  padding: 8px 15px;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 15vw, 7rem);
+  padding: 5px 15px;
   background: #fff;
   color: #000;
   text-transform: uppercase;
   position: relative;
-  transition: all 0.2s ease;
+  transition: all 0.15s steps(3);
   user-select: none;
-  border: 3px solid #000;
-  box-shadow: 4px 4px 0 #000;
+  border: 4px solid #000;
+  box-shadow: 6px 6px 0 #000;
 }
 
-/* Halftone Dot Overlay */
-.letter::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(#000 1px, transparent 0);
-  background-size: 3px 3px;
-  opacity: 0.1;
-  pointer-events: none;
-}
+/* Specific offsets for DIY look */
+.cutout-1 { transform: rotate(-3deg); background: var(--color-accent); color: #fff; }
+.cutout-2 { transform: rotate(2deg); background: #000; color: #fff; }
+.cutout-3 { transform: rotate(-5deg); }
+.cutout-4 { transform: rotate(4deg); background: var(--color-vibrant-2); }
+.cutout-5 { transform: rotate(-2deg); }
+.cutout-6 { transform: rotate(6deg); background: var(--color-vibrant-1); }
 
-/* Asymmetric Cutouts & Jagged Rotations */
-.cutout-1 { transform: rotate(-3deg) translateY(5px); background: #fff; }
-.cutout-2 { transform: rotate(2deg); background: var(--color-vibrant-1); color: #fff; border-radius: 0 15px 0 5px; }
-.cutout-3 { transform: rotate(-5deg) translateX(-5px); background: #fff; }
-.cutout-4 { transform: rotate(4deg) translateY(-8px); background: var(--color-accent); border-radius: 30% 5% 20% 0; }
-.cutout-5 { transform: rotate(-2deg); background: #fff; }
-.cutout-6 { transform: rotate(6deg) translateX(10px); background: var(--color-vibrant-2); color: #000; }
-
-.cutout-7 { transform: rotate(-4deg) translateY(10px); background: #000; color: var(--color-accent); border: 4px solid var(--color-accent); }
-.cutout-8 { transform: rotate(3deg); background: #fff; }
-.cutout-9 { transform: rotate(-2deg) translateY(-5px); background: var(--color-vibrant-1); color: #fff; clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 0% 100%); }
+.cutout-7 { transform: rotate(-4deg); background: #000; color: #fff; }
+.cutout-8 { transform: rotate(3deg); background: var(--color-accent); color: #fff; }
+.cutout-9 { transform: rotate(-2deg); }
 
 .letter:hover {
   transform: scale(1.1) rotate(0deg) !important;
   z-index: 10;
-  background: #fff;
-  color: #000;
-  box-shadow: 15px 15px 0 var(--color-accent);
+  box-shadow: 10px 10px 0 #000;
 }
 
-.punk-meta {
-  background: #000;
-  color: #fff;
-  padding: 5px 20px;
-  margin-top: 30px;
+.sticker-tag {
+  background: var(--color-vibrant-2);
+  color: #000;
+  padding: 8px 25px;
+  margin-top: 20px;
+  font-family: var(--font-mono);
   font-weight: 900;
-  transform: skewX(-15deg);
-  border: 2px solid var(--color-vibrant-1);
+  font-size: 0.8rem;
+  transform: rotate(-3deg);
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0 #000;
 }
 
 .cta-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 30px;
 }
 
-.enter-btn {
-  background: none;
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 20px 60px;
-  color: #fff;
-  font-family: var(--font-mono);
-  font-size: 1rem;
-  font-weight: bold;
-  letter-spacing: 0.2em;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  background: rgba(255,255,255,0.02);
-}
-
-.enter-btn:hover {
+.jagged-box {
   background: #fff;
-  color: #000;
-  border-color: #fff;
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(255,255,255,0.1);
+  border: 3px solid #000;
+  padding: 30px;
+  box-shadow: var(--shadow-long);
+  width: 100%;
+  clip-path: polygon(1% 1%, 100% 0%, 99% 99%, 0% 100%);
 }
 
 .auth-box {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  width: 100%;
-  max-width: 400px;
+  gap: 20px;
 }
 
 .auth-input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 20px;
-  color: #fff;
+  background: #eee;
+  border: 2px solid #000;
+  padding: 15px;
+  color: #000;
   font-family: var(--font-mono);
   text-align: center;
-  font-size: 0.9rem;
-  letter-spacing: 0.3em;
-  transition: all 0.3s ease;
+  font-size: 1rem;
+  font-weight: bold;
   outline: none;
+  width: 100%;
 }
 
 .auth-input:focus {
+  background: #fff;
   border-color: var(--color-accent);
-  background: rgba(255, 255, 255, 0.1);
+}
+
+.enter-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 18px 40px;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s steps(2);
+  width: 100%;
+  position: relative;
+}
+
+.enter-btn:hover {
+  background: var(--color-accent);
+  color: #fff;
+  transform: translate(-3px, -3px);
+  box-shadow: 6px 6px 0 #000;
 }
 
 .auth-error {
-  color: #ff4444;
+  color: #fff;
+  background: #ff4444;
+  padding: 5px 10px;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  margin-top: 5px;
-  animation: fadeIn 0.3s ease;
+  font-size: 0.7rem;
+  border: 2px solid #000;
+}
+
+.tagline {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: bold;
+  color: #000;
+  max-width: 250px;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .error-shake {
@@ -268,99 +261,21 @@ const handleEnter = () => {
   40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.btn-glare {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: 0.6s;
-}
-
-.enter-btn:hover .btn-glare {
-  left: 150%;
-}
-
-.tagline {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--color-text-secondary);
-  max-width: 300px;
-  line-height: 1.6;
-}
-
-.bottom-bar {
-  position: absolute;
-  bottom: 40px;
-  width: 100%;
-  padding: 0 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  color: var(--color-text-secondary);
-  opacity: 0.5;
-}
-
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.dot {
-  width: 6px;
-  height: 6px;
-  background: var(--color-accent);
-  border-radius: 50%;
-  box-shadow: 0 0 10px var(--color-accent);
-}
-
-/* Base styles cleanup for this view */
-:global(body) {
-  overflow: hidden;
-}
-
 @media (max-width: 768px) {
-  .brand-name {
-    gap: 5px;
-  }
-  
-  .letter-row {
-     gap: 2px;
-  }
-
   .letter {
-    font-size: clamp(1.5rem, 8vw, 3rem);
-    padding: 6px 10px;
-    border-width: 2px;
-    box-shadow: 3px 3px 0 #000;
-  }
-
-  /* Reduce rotations and offsets for mobile to prevent overflow */
-  .cutout-1 { transform: rotate(-2deg) translateY(2px); }
-  .cutout-4 { transform: rotate(2deg) translateY(-4px); }
-  .cutout-6 { transform: rotate(3deg) translateX(4px); }
-  .cutout-7 { transform: rotate(-2deg) translateY(4px); }
-  .cutout-9 { clip-path: none; transform: rotate(-1deg); }
-
-  .punk-meta {
-    font-size: 0.6rem;
-    margin-top: 15px;
-    letter-spacing: 0.1em;
+    font-size: clamp(2rem, 12vw, 4rem);
+    padding: 4px 10px;
+    border-width: 3px;
+    box-shadow: 4px 4px 0 #000;
   }
   
+  .jagged-box {
+    padding: 20px;
+  }
+
   .enter-btn {
-    padding: 15px 40px;
-    width: 80vw;
+    padding: 15px 30px;
+    font-size: 1.2rem;
   }
 }
 </style>

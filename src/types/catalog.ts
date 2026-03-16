@@ -17,7 +17,6 @@ export interface Album {
     description: string;
     photos: Photo[];
     price?: number;
-    yuanPrice?: number;
 }
 
 export interface CategoryItem {

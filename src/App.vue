@@ -18,7 +18,7 @@ onMounted(() => {
 });
 
 const enterArchive = () => {
-  // authStore handles the login, the computed showCatalog will react
+  // authStore handles the login
 };
 
 const handleLogout = () => {
@@ -43,13 +43,11 @@ const handleCategoryClick = (cat: string, parentName?: string) => {
   if (parentName) {
     expandedParents.value.add(parentName);
   }
-  // Close sidebar on mobile after selection
   if (window.innerWidth < 768) {
     isSidebarOpen.value = false;
   }
 };
 
-// Auto-expand parent if active child found
 watch(() => catalogStore.selectedCategory, (newCat) => {
   if (!newCat) return;
   catalogStore.categoryItems.forEach(parent => {
@@ -59,7 +57,6 @@ watch(() => catalogStore.selectedCategory, (newCat) => {
   });
 }, { immediate: true });
 
-// Manage body scroll based on view and viewer state
 watch([() => authStore.isLoggedIn, () => catalogStore.isViewerOpen], ([shown, viewerOpen]) => {
   if (!shown || viewerOpen) {
     document.body.style.overflow = 'hidden';
@@ -71,80 +68,80 @@ watch([() => authStore.isLoggedIn, () => catalogStore.isViewerOpen], ([shown, vi
 
 <template>
   <div class="app-root">
-    <Transition name="slide-up" mode="out-in">
+    <Transition name="fade" mode="out-in">
       <LandingPage v-if="!showCatalog" @enter="enterArchive" />
       
       <div v-else class="layout" :class="{ 'sidebar-open': isSidebarOpen }">
-        <!-- Mobile Header -->
         <header class="mobile-header">
-          <div class="logo">MIGUEL LIN</div>
+          <div class="logo-small">MIGUEL LIN</div>
           <button class="menu-toggle" @click="toggleSidebar">
-            <span class="icon">{{ isSidebarOpen ? '✕' : '☰' }}</span>
+             <span class="burger-icon" :class="{ 'is-active': isSidebarOpen }"></span>
           </button>
         </header>
 
-        <!-- Overlay -->
         <div class="sidebar-overlay" @click="toggleSidebar"></div>
 
-        <!-- Vertical Sidebar Anchor -->
         <aside class="sidebar">
-          <div class="logo desktop-only">MIGUEL LIN</div>
-          
-          <!-- Reactive Search -->
-          <div class="search-container">
-            <input 
-              v-model="catalogStore.searchQuery" 
-              type="text" 
-              placeholder="SEARCH CATALOG / BUSCAR..."
-              class="search-input"
-            />
-            <button 
-              v-if="catalogStore.searchQuery" 
-              @click="catalogStore.searchQuery = ''" 
-              class="clear-search"
-            >✕</button>
-          </div>
+          <div class="sidebar-inner">
+            <div class="logo-container desktop-only">
+              <h1 class="logo-main">MIGUEL LIN</h1>
+              <div class="logo-accent">ARCHIVE // V.24</div>
+            </div>
+            
+            <div class="search-box">
+              <input 
+                v-model="catalogStore.searchQuery" 
+                type="text" 
+                placeholder="SEARCH ARCHIVE..."
+                class="search-input"
+              />
+              <button 
+                v-if="catalogStore.searchQuery" 
+                @click="catalogStore.searchQuery = ''" 
+                class="clear-search"
+              >✕</button>
+            </div>
 
-          <nav class="categories">
-            <div v-for="parent in catalogStore.categoryItems" :key="parent.name" class="cat-group">
-              <div 
-                class="cat-item parent" 
-                :class="{ 
-                  active: catalogStore.selectedCategory === parent.name,
-                  expanded: expandedParents.has(parent.name) 
-                }"
-                @click="toggleParent(parent.name); handleCategoryClick(parent.name)"
-              >
-                <span class="chevron" v-if="parent.children && parent.children.length > 0">
-                  {{ expandedParents.has(parent.name) ? '▾' : '▸' }}
-                </span>
-                {{ parent.name.toUpperCase() }}
-              </div>
-              
-              <div v-if="parent.children && parent.children.length > 0 && expandedParents.has(parent.name)" class="sub-categories">
+            <nav class="categories">
+              <div v-for="parent in catalogStore.categoryItems" :key="parent.name" class="cat-group">
                 <div 
-                  v-for="child in parent.children" 
-                  :key="child.name"
-                  class="cat-item child" 
-                  :class="{ active: catalogStore.selectedCategory === child.name }"
-                  @click="handleCategoryClick(child.name, parent.name)"
+                  class="cat-item parent" 
+                  :class="{ 
+                    active: catalogStore.selectedCategory === parent.name,
+                    expanded: expandedParents.has(parent.name) 
+                  }"
+                  @click="toggleParent(parent.name); handleCategoryClick(parent.name)"
                 >
-                  {{ child.name }}
+                  <span class="marker">{{ expandedParents.has(parent.name) ? '●' : '○' }}</span>
+                  <span class="label">{{ parent.name.toUpperCase() }}</span>
+                </div>
+                
+                <div v-if="parent.children && parent.children.length > 0 && expandedParents.has(parent.name)" class="sub-categories">
+                  <div 
+                    v-for="child in parent.children" 
+                    :key="child.name"
+                    class="cat-item child" 
+                    :class="{ active: catalogStore.selectedCategory === child.name }"
+                    @click="handleCategoryClick(child.name, parent.name)"
+                  >
+                    {{ child.name }}
+                  </div>
                 </div>
               </div>
-            </div>
-          </nav>
+            </nav>
 
-          <div class="sidebar-footer">
-            <button class="logout-btn" @click="handleLogout">LOGOUT / SALIR</button>
-            <div class="footer-meta">MIGUEL LIN © 2024</div>
+            <div class="sidebar-footer">
+              <button class="logout-btn" @click="handleLogout">EXIT ARCHIVE</button>
+              <div class="footer-meta">ML©2024_PUNK_EDITION</div>
+            </div>
           </div>
         </aside>
 
         <main class="content">
+          <div class="newsprint-texture"></div>
           <header class="section-header">
-            <h1>{{ catalogStore.selectedCategory || 'Drops.' }}</h1>
-            <p class="subtitle">Archive of quality apparel and collectibles.</p>
+            <h1 class="page-title">{{ catalogStore.selectedCategory || 'THE FEED' }}</h1>
+            <div class="page-meta">CURATED HIGH-END SNEAKERS & STREETWEAR</div>
           </header>
 
           <CatalogGrid />
@@ -158,245 +155,287 @@ watch([() => authStore.isLoggedIn, () => catalogStore.isViewerOpen], ([shown, vi
 
 <style scoped>
 .layout {
-  display: block;
+  display: flex;
   width: 100%;
+  background: var(--color-bg);
 }
 
 .mobile-header {
   display: none;
-  height: 60px;
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
-  padding: 0 20px;
+  height: 70px;
+  background: #fff;
+  border-bottom: 3px solid #000;
+  padding: 0 25px;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  width: 100%;
+  z-index: 1100;
+}
+
+.logo-small {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #000;
+  letter-spacing: -1px;
 }
 
 .menu-toggle {
   background: none;
   border: none;
-  color: var(--color-text-primary);
-  font-size: 1.5rem;
   cursor: pointer;
-  padding: 5px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.burger-icon {
+  width: 24px;
+  height: 3px;
+  background: #000;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.burger-icon::before, .burger-icon::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 3px;
+  background: #000;
+  left: 0;
+  transition: all 0.3s ease;
+}
+
+.burger-icon::before { top: -8px; }
+.burger-icon::after { bottom: -8px; }
+
+.burger-icon.is-active {
+  background: transparent;
+}
+
+.burger-icon.is-active::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.burger-icon.is-active::after {
+  bottom: 0;
+  transform: rotate(-45deg);
 }
 
 .sidebar {
-  width: 280px;
+  width: 320px;
   height: 100vh;
-  position: fixed;
-  left: 0;
+  position: sticky;
   top: 0;
-  border-right: 1px solid var(--color-border);
+  background: #fff;
+  border-right: 4px solid #000;
+  padding: 50px 40px;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.sidebar-inner {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 40px;
-  justify-content: space-between;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
-  background: var(--color-bg);
-  z-index: 1000;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(4px);
-  z-index: 900;
-  opacity: 0;
-  transition: opacity 0.4s ease;
+.logo-container {
+  margin-bottom: 50px;
 }
 
-.logo {
+.logo-main {
   font-family: var(--font-display);
-  font-size: 2rem;
-  letter-spacing: -2px;
-  color: var(--color-accent);
-  margin-bottom: 20px;
+  font-size: 2.8rem;
+  line-height: 0.9;
+  color: #000;
+  margin: 0;
 }
 
-.search-container {
+.logo-accent {
+  background: var(--color-accent);
+  color: #fff;
+  display: inline-block;
+  padding: 2px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 900;
+  margin-top: 5px;
+  transform: rotate(-1deg);
+}
+
+.search-box {
+  margin-bottom: 40px;
   position: relative;
-  margin-bottom: 30px;
 }
 
 .search-input {
   width: 100%;
-  background: var(--color-bg-alt);
-  border: 2px solid var(--color-border);
-  padding: 12px 15px;
-  color: var(--color-text-primary);
+  background: #f5f5f5;
+  border: 3px solid #000;
+  padding: 15px;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 1px;
+  font-size: 0.75rem;
+  font-weight: bold;
   outline: none;
-  transition: all 0.3s ease;
-  clip-path: polygon(0% 0%, 100% 5%, 98% 100%, 2% 95%);
+  box-shadow: 4px 4px 0 #000;
+  transition: all 0.2s steps(2);
 }
 
 .search-input:focus {
-  border-color: var(--color-accent);
-  background: rgba(var(--color-accent-rgb), 0.05);
-  transform: rotate(-0.5deg) scale(1.02);
-}
-
-.clear-search {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 5px;
-}
-
-.clear-search:hover {
-  color: var(--color-accent);
-}
-
-.desktop-only {
-  display: block;
+  background: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--color-accent);
 }
 
 .categories {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 30px;
-}
-
-.cat-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: 25px;
 }
 
 .cat-item {
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-  color: var(--color-text-secondary);
   cursor: pointer;
-  transition: all 0.3s var(--transition-main);
-  line-height: 1.4;
+  transition: all 0.2s steps(2);
 }
 
 .cat-item.parent {
-  color: var(--color-text-primary);
-  opacity: 0.9;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: #000;
 }
 
-.chevron {
-  font-size: 0.6rem;
-  color: var(--color-text-secondary);
-  width: 12px;
-  transition: transform 0.3s ease;
+.cat-item.parent.active .label {
+  background: var(--color-vibrant-2);
+  padding: 2px 8px;
 }
 
-.cat-item.parent.expanded .chevron {
-  color: var(--color-accent);
-}
-
-.cat-item.child {
-  font-size: 0.75rem;
-  letter-spacing: 1px;
-  padding-left: 20px;
-  font-weight: 400;
-  color: var(--color-text-secondary);
-}
-
-.cat-item:hover, .cat-item.active {
-  color: var(--color-accent);
-  transform: translateX(5px);
-}
-
-.cat-item.parent.active::before {
-  content: "— ";
-  color: var(--color-accent);
-}
-
-.cat-item.child.active {
-  color: var(--color-accent);
-  font-weight: 600;
+.cat-item.parent .marker {
+  font-size: 0.8rem;
 }
 
 .sub-categories {
+  margin-top: 10px;
+  margin-left: 20px;
+  padding-left: 15px;
+  border-left: 2px dashed #000;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-left: 1px solid var(--color-border);
-  margin-left: 5px;
 }
 
-.content {
-  margin-left: 280px;
-  padding: 80px;
-  flex: 1;
-  min-width: 0;
+.cat-item.child {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555;
+  padding: 2px 0;
 }
 
-.section-header {
-  margin-bottom: 60px;
+.cat-item.child.active {
+  color: #000;
+  font-weight: 800;
+  text-decoration: underline wavy var(--color-accent);
 }
 
-.section-header h1 {
-  font-size: 5rem;
-  line-height: .9;
-  margin-bottom: 10px;
-  word-break: break-word;
-}
-
-.subtitle {
-  color: var(--color-text-secondary);
-  font-size: 1.1rem;
-}
-
-.footer-meta {
-  font-size: 0.6rem;
-  color: var(--color-text-secondary);
-  letter-spacing: 1px;
-  margin-top: 40px;
+.cat-item.child:hover {
+  color: var(--color-accent);
+  padding-left: 5px;
 }
 
 .sidebar-footer {
-  margin-top: auto;
-  padding-top: 40px;
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 2px solid #000;
 }
 
 .logout-btn {
-  background: none;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
+  width: 100%;
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 12px;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
-  padding: 8px 15px;
+  font-size: 0.7rem;
+  font-weight: bold;
   cursor: pointer;
-  margin-bottom: 20px;
-  transition: all 0.3s ease;
-  letter-spacing: 1px;
+  margin-bottom: 15px;
 }
 
 .logout-btn:hover {
-  border-color: #ff4444;
-  color: #ff4444;
+  background: #ff4444;
 }
 
-/* Responsive */
+.footer-meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: #999;
+}
+
+.content {
+  flex: 1;
+  padding: 80px 60px;
+  min-height: 100vh;
+  position: relative;
+}
+
+.newsprint-texture {
+  position: fixed;
+  inset: 0;
+  background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.section-header {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 60px;
+}
+
+.page-title {
+  font-size: 6rem;
+  line-height: 0.8;
+  color: #000;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.page-meta {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #000;
+  margin-top: 15px;
+  letter-spacing: 2px;
+}
+
+/* Sidebar Responsive Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(2px);
+  z-index: 900;
+}
+
+/* Tablet / Mobile */
 @media (max-width: 1024px) {
-  .section-header h1 {
-    font-size: 4rem;
+  .page-title {
+    font-size: 4.5rem;
   }
 }
 
@@ -404,61 +443,35 @@ watch([() => authStore.isLoggedIn, () => catalogStore.isViewerOpen], ([shown, vi
   .mobile-header {
     display: flex;
   }
-
+  
+  .sidebar {
+    position: fixed;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
+    padding: 100px 30px 40px;
+  }
+  
+  .sidebar-open .sidebar {
+    transform: translateX(0);
+    box-shadow: 10px 0 0 #000;
+  }
+  
+  .sidebar-open .sidebar-overlay {
+    display: block;
+  }
+  
+  .content {
+    padding: 100px 25px 40px;
+    margin-left: 0;
+  }
+  
+  .page-title {
+    font-size: 3rem;
+  }
+  
   .desktop-only {
     display: none;
   }
-
-  .sidebar {
-    transform: translateX(-100%);
-    box-shadow: 20px 0 50px rgba(0,0,0,0.5);
-  }
-
-  .sidebar-open .sidebar {
-    transform: translateX(0);
-  }
-
-  .sidebar-open .sidebar-overlay {
-    display: block;
-    opacity: 1;
-  }
-
-  .content {
-    margin-left: 0;
-    padding: 30px 20px;
-  }
-
-  .section-header {
-    margin-bottom: 30px;
-  }
-
-  .section-header h1 {
-    font-size: 3rem;
-  }
-
-  .subtitle {
-    font-size: 0.9rem;
-  }
-}
-
-.app-root {
-  width: 100%;
-  min-height: 100vh;
-}
-
-/* Transition: Slide Up */
-.slide-up-enter-active,
-.slide-up-leave-active {
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.slide-up-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.slide-up-leave-to {
-  opacity: 0;
-  transform: translateY(-50px) scale(1.05);
 }
 </style>

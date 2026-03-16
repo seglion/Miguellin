@@ -1,17 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lexend:wght@300;400;700;800&family=Space+Grotesk:wght@300;400;700&family=Bebas+Neue&display=swap');
+
 :root {
-  --color-bg: #080808;
-  --color-surface: #121212;
-  --color-text-primary: #f5f5f5;
-  --color-text-secondary: #888888;
-  --color-accent: #c3ff00;
-  --color-vibrant-1: #9d00ff;
-  --color-vibrant-2: #00f2ff;
-  --color-border: #222222;
-  --grad-vibrant: linear-gradient(135deg, var(--color-vibrant-1), var(--color-vibrant-2));
-  --font-display: 'Playfair Display', serif;
+  --color-bg: #f1f1f1;
+  --color-surface: #ffffff;
+  --color-text-primary: #000000;
+  --color-text-secondary: #444444;
+  --color-accent: #ff007a; /* Neon Pink */
+  --color-vibrant-1: #00f2ff; /* Cyan */
+  --color-vibrant-2: #ffec00; /* Yellow */
+  --color-border: #000000;
+  --color-border-soft: #cccccc;
+  
+  --grad-vibrant: linear-gradient(135deg, var(--color-accent), var(--color-vibrant-1));
+  
+  --font-display: 'Bebas Neue', sans-serif;
   --font-brand: 'Lexend', sans-serif;
-  --shadow-neon: 0 0 20px rgba(195, 255, 0, 0.4);
-  --shadow-vibrant: 0 0 30px rgba(157, 0, 255, 0.3);
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-mono: 'Courier New', Courier, monospace;
+
+  --shadow-bold: 4px 4px 0px #000000;
+  --shadow-long: 8px 8px 0px #000000;
+  
+  --transition-main: 0.2s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 * {
@@ -22,9 +32,12 @@
 
 body {
   background-color: var(--color-bg);
+  background-image: 
+    radial-gradient(circle at 2px 2px, rgba(0,0,0,0.05) 1px, transparent 0);
+  background-size: 24px 24px;
   color: var(--color-text-primary);
   font-family: var(--font-body);
-  line-height: 1.6;
+  line-height: 1.4;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -36,20 +49,51 @@ body {
 
 h1, h2, h3 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 400;
+  letter-spacing: 1px;
 }
 
-/* Custom Scrollbar for Noir look */
+/* Comic Utility Classes */
+.jagged-edge {
+  clip-path: polygon(0% 2%, 100% 0%, 98% 100%, 2% 98%);
+}
+
+.sticker {
+  background: var(--color-vibrant-2);
+  color: #000;
+  padding: 5px 15px;
+  border: 2px solid #000;
+  box-shadow: var(--shadow-bold);
+  font-weight: 800;
+  transform: rotate(-2deg);
+  display: inline-block;
+}
+
+.halftone {
+  background-image: radial-gradient(#000 1px, transparent 1px);
+  background-size: 4px 4px;
+  opacity: 0.1;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
   background: var(--color-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 10px;
+  background: #000;
+  border: 2px solid var(--color-bg);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-accent);
+}
+
+/* Transitions */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
