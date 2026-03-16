@@ -30,20 +30,26 @@ class CatalogService {
         cleaned = cleaned.replace(/^BATCH\s+/i, '');
         
         return cleaned;
-    }
-
-    private extractYuanPrice(title: string): number | undefined {
-        // Extract price like "250Y", "Y250", "P250", "250P", "250 yuan", "¥250", "￥250", "250CNY"
+    }    private extractYuanPrice(title: string | null | undefined): number | undefined {
+        if (!title) return undefined;
+        // Robust patterns based on audit of 5900+ items
         const patterns = [
-            /\b(\d+)\s*CNY\b/i,
-            /(\d+)\s*Y(?![a-z0-9])/i,  // 250Y (Allow boundary or non-alphanumeric)
-            /(\d+)\s*Y[A-Z0-9]{1,10}/i, // 160YS2TOP, 150YSS (Match price followed by arbitrary alphanumeric batch/noise)
-            /\bY\s*(\d+)/i,             // Y250
-            /(?<![a-zA-Z])P\s*(\d+)/i,   // P250
-            /(\d+)\s*P(?![a-z0-9])/i,   // 250P
-            /(\d+)\s*P[A-Z0-9]{1,10}/i, // 250PSS, 250PVT
-            /\b(\d+)\s*yuan\b/i,
-            /[¥￥]\s*(\d+)/
+            /\b(\d{2,4})\s*CNY\b/i,
+            /(\d{2,4})\s*Y(?![a-z0-9])/i,
+            /(\d{2,4})\s*Y[A-Z0-9]{1,10}/i,
+            /\bY\s*(\d{2,4})/i,
+            /(?<![a-zA-Z])P\s*(\d{2,4})/i,
+            /(\d{2,4})\s*P(?![a-z0-9])/i,
+            /(\d{2,4})\s*P[A-Z0-9]{1,10}/i,
+            /\b(\d{2,4})\s*yuan\b/i,
+            /[¥￥]\s*(\d{2,4})/i,
+            /(\d{2,4})\s*[¥￥]/i,
+            // Batch keywords: 180  E batch, 260 TG Batch, etc.
+            /\b(\d{2,4})\s*(?:[A-Z0-9]{1,5}\s+)?(?:Batch|版)/i,
+            // Direct Batch codes: 120R, 150VT, etc.
+            /\b(\d{2,4})\s*(?:TG|LJR|TOP|M|GX|OWF|VT|PK|LW|FK|S2|G5|Batch|版|XC|KZ|KZ2\.0|SS|E|GT|MW|WM|HP|LW|XP|OG|DG|XDT|H12|LJ|KW|R|C|G|D|Z|X|B|F|K|Q)/i,
+            // Folder start pattern: /190 SS ... or /260 TG ...
+            /(?:^|\/)\s*(\d{3})\s+[A-Z]/i
         ];
         
         for (const pattern of patterns) {
@@ -52,20 +58,14 @@ class CatalogService {
                 const rawValue = match[1];
                 let value = parseInt(rawValue, 10);
                 
-                // Heuristic: If prefixed price (P/¥/￥/Y) is followed by a long string of numbers
-                // (suspected concatenated ID), take only the first 3-4 digits.
-                const source = pattern.source;
-                const isPrefixed = source.includes('P') || source.includes('[¥￥]') || (source.startsWith('\\bY') && !source.includes('match[1].length'));
+                // Heuristic filtering for noisy patterns
+                const isExplicit = pattern.source.includes('Y') || pattern.source.includes('P') || pattern.source.includes('CNY') || pattern.source.includes('[¥￥]');
                 
-                if (isPrefixed) {
-                    if (value > 5000 || rawValue.length >= 6) {
-                        value = parseInt(rawValue.substring(0, 3), 10);
-                    }
-                }
-                
-                // Final validation: Prices are usually between 10 and 5000 Yuan
-                if (value >= 10 && value <= 5000) {
-                    return value;
+                if (isExplicit) {
+                    if (value >= 10 && value <= 5000) return value;
+                } else {
+                    // Less explicit patterns (Batch/Folder) need tighter range
+                    if (value >= 80 && value <= 1500) return value;
                 }
             }
         }
@@ -73,10 +73,9 @@ class CatalogService {
     }
 
     private calculateEuroPrice(yuan: number): number {
-        // Calculation: ((Yuan + 10 shipping) * 0.14 rate * 1.09 margin) + 7 profit
-        // Adjusted to +7 based on user feedback to balance competitiveness and profit.
-        const basePrice = (yuan + 10) * 0.14 * 1.09;
-        return Math.ceil(basePrice + 7);
+        // Calculation: ((Yuan + 10 shipping) * 0.15 rate * 1.10 margin) + 8 profit
+        const basePrice = (yuan + 10) * 0.15 * 1.10;
+        return Math.ceil(basePrice + 8);
     }
 
     private extractBatch(title: string): string | undefined {
@@ -98,17 +97,15 @@ class CatalogService {
                 const album = data[id];
                 const originalTitle = album.title;
                 const description = album.description || '';
+                const photoPath = album.photos && album.photos.length > 0 ? album.photos[0].local_path : '';
                 
-                // Try to extract from title first, then description, then photo paths
-                let yuanPrice = this.extractYuanPrice(originalTitle);
-                if (yuanPrice === undefined) {
-                    yuanPrice = this.extractYuanPrice(description);
-                }
-                
-                // Fallback: Check first photo local path if still missing (useful for batch folder prices)
-                if (yuanPrice === undefined && album.photos && album.photos.length > 0) {
-                    yuanPrice = this.extractYuanPrice(album.photos[0].local_path);
-                }
+                // Priority for Price Extraction:
+                // 1. Photo Path (contains vendor/batch folders which are very reliable)
+                // 2. Original Title
+                // 3. Description
+                let yuanPrice = this.extractYuanPrice(photoPath);
+                if (yuanPrice === undefined) yuanPrice = this.extractYuanPrice(originalTitle);
+                if (yuanPrice === undefined) yuanPrice = this.extractYuanPrice(description);
 
                 // Batch prioritization: JSON field first, then dynamic extraction
                 let batch = album.batch !== "Standard" ? album.batch : this.extractBatch(originalTitle);
