@@ -48,11 +48,13 @@ class CatalogService {
     }
 
     private extractYuanPrice(title: string): number | undefined {
-        // Extract price like "250Y", "P250", "250 yuan", "¥250", "￥250", "250CNY"
+        // Extract price like "250Y", "Y250", "P250", "250P", "250 yuan", "¥250", "￥250", "250CNY"
         const patterns = [
             /\b(\d+)\s*CNY\b/i,
-            /(\d+)\s*Y/i,
-            /(?<![a-zA-Z])P\s*(\d+)/i,
+            /(\d+)\s*Y\b/i,           // 250Y
+            /\bY\s*(\d+)/i,           // Y250
+            /(?<![a-zA-Z])P\s*(\d+)/i, // P250
+            /\b(\d+)\s*P\b/i,          // 250P (often used in some stores)
             /\b(\d+)\s*yuan\b/i,
             /[¥￥]\s*(\d+)/
         ];
@@ -63,19 +65,21 @@ class CatalogService {
                 const rawValue = match[1];
                 let value = parseInt(rawValue, 10);
                 
-                // Heuristic: If prefixed price (P/¥/￥) is followed by a long string of numbers
+                // Heuristic: If prefixed price (P/¥/￥/Y) is followed by a long string of numbers
                 // (suspected concatenated ID), take only the first 3-4 digits.
-                // e.g. ￥180734734W -> rawValue is 180734734 -> should be 180
-                const isPrefixed = pattern.source.includes('P') || pattern.source.includes('[¥￥]');
+                const source = pattern.source;
+                const isPrefixed = source.includes('P') || source.includes('[¥￥]') || (source.startsWith('\\bY') && !source.includes('match[1].length'));
+                
                 if (isPrefixed) {
                     if (value > 5000 || rawValue.length >= 6) {
-                        // Prices in these catalogs are almost never > 5000 and usually 3 digits.
-                        // Take the first 3 characters and re-parse.
                         value = parseInt(rawValue.substring(0, 3), 10);
                     }
                 }
                 
-                return value;
+                // Final validation: Prices are usually between 10 and 5000 Yuan
+                if (value >= 10 && value <= 5000) {
+                    return value;
+                }
             }
         }
         return undefined;
@@ -119,7 +123,8 @@ class CatalogService {
                     yuanPrice = this.extractYuanPrice(album.photos[0].local_path);
                 }
 
-                let batch = this.extractBatch(originalTitle);
+                // Batch prioritization: JSON field first, then dynamic extraction
+                let batch = album.batch !== "Standard" ? album.batch : this.extractBatch(originalTitle);
                 if (!batch) {
                     batch = this.extractBatch(description);
                 }
@@ -129,15 +134,20 @@ class CatalogService {
                     finalPrice = this.calculateEuroPrice(yuanPrice);
                 }
 
-                // Prepare clean title: Remove price and batch markers
-                let displayTitle = originalTitle
-                    .replace(/\d+\s*CNY/i, '')
-                    .replace(/\d+\s*Y/i, '')
-                    .replace(/P\s*\d+/i, '')
-                    .replace(/\d+\s*yuan/i, '')
-                    .replace(/[¥￥]\s*\d+/g, '')
-                    .replace(/【.*?】/g, '')
-                    .trim();
+                // Prepare clean title: Use pre-processed title from JSON if available
+                let displayTitle = album.title || originalTitle;
+                
+                // If it's the original title (not pre-processed), apply fallback cleaning
+                if (!album.title) {
+                    displayTitle = displayTitle
+                        .replace(/\d+\s*CNY/i, '')
+                        .replace(/\d+\s*Y/i, '')
+                        .replace(/P\s*\d+/i, '')
+                        .replace(/\d+\s*yuan/i, '')
+                        .replace(/[¥￥]\s*\d+/g, '')
+                        .replace(/【.*?】/g, '')
+                        .trim();
+                }
 
                 cleanedCatalog[id] = {
                     ...album,
