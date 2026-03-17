@@ -5,11 +5,21 @@ class CatalogService {
     private cleanName(name: string | null | undefined): string {
         if (!name) return '';
 
-        // 1. Remove Chinese characters first
-        let cleaned = name.replace(/[\u4e00-\u9fff]/g, '');
+        // 1. Remove Chinese characters and weird symbols
+        let cleaned = name.replace(/[^\x00-\x7F]+/g, ' ');
 
-        // 2. Loop to strip any number of leading batch/slash prefixes (e.g., "MAX/ Batch/batch/ ")
-        // We look for patterns of 1-15 chars followed by a slash at the start
+        // 2. Aggressive Price removal: e.g. 200Y, 190Y, ¥300, 300Yuan
+        cleaned = cleaned
+            .replace(/\b\d{2,4}\s*[Yy](?:uan|an)?\b/gi, ' ')
+            .replace(/[¥￥]\s*\d{2,4}\b/g, ' ');
+
+        // 3. Aggressive Batch removal: "RS BATCH", "LJR BATCH", "VT BATCH", etc.
+        cleaned = cleaned.replace(/\b[A-Z0-9.]{1,10}\s+BATCH\b/gi, ' ');
+
+        // 4. Bracketed content (usually batch)
+        cleaned = cleaned.replace(/【|】|\[|\]/g, ' ');
+
+        // 5. Loop to strip any number of leading batch/slash prefixes (e.g., "MAX/ Batch/batch/ ")
         let prev;
         do {
             prev = cleaned;
@@ -18,16 +28,12 @@ class CatalogService {
                 .replace(/^[\/\s-]+/, '');
         } while (cleaned !== prev);
 
-        // 3. General cleaning and capitalization
+        // 6. General cleaning and capitalization
         cleaned = cleaned
             .replace(/[\/|-]\s*$/, '')
-            .replace(/【|】/g, ' ')
             .replace(/\s+/g, ' ')
             .trim()
             .toUpperCase();
-
-        // Literal "BATCH" keyword cleanup if it's still there as a separate word at start
-        cleaned = cleaned.replace(/^BATCH\s+/i, '');
 
         return cleaned;
     } private extractYuanPrice(title: string | null | undefined): number | undefined {
