@@ -129,7 +129,7 @@ watch([() => authStore.isLoggedIn, () => catalogStore.isViewerOpen], ([shown, vi
                     active: catalogStore.selectedCategory === parent.name,
                     expanded: expandedParents.has(parent.name) 
                   }"
-                  @click="toggleParent(parent.name); handleCategoryClick(parent.name)"
+                  @click="toggleParent(parent.name); handleCategoryClick(parent.name, parent.name)"
                 >
                   <span class="marker">{{ expandedParents.has(parent.name) ? '●' : '○' }}</span>
                   <span class="label">{{ parent.name.toUpperCase() }}</span>

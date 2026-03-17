@@ -164,12 +164,19 @@ class CatalogService {
         }
     }
 
-    async getAlbumsByCategory(categoryName: string): Promise<Album[]> {
+    async getAlbumsByCategory(categoryName: string, brandName?: string): Promise<Album[]> {
         const catalog = await this.fetchCatalog();
         const targetCategory = categoryName.toUpperCase().trim();
+        const targetBrand = brandName?.toUpperCase().trim();
 
         return Object.values(catalog).filter((album: Album) => {
-            // Priority 1: Direct link via sub_category or parent_category
+            // Case 1: Filter by both Brand and SubCategory (Specific child click)
+            if (targetBrand && targetBrand !== targetCategory) {
+                return (album.brand === targetBrand || album.category === targetBrand) && 
+                       (album.sub_category === targetCategory || album.category === targetCategory);
+            }
+
+            // Case 2: Filter by Parent Category (Parent click or Brand click)
             return album.sub_category === targetCategory ||
                 album.category === targetCategory ||
                 album.parent_category === targetCategory;

@@ -7,6 +7,7 @@ export const useCatalogStore = defineStore('catalog', {
         categories: [] as string[], // Legacy flat list for breadcrumbs/compatibility
         categoryItems: [] as CategoryItem[], // hierarchical menu
         selectedCategory: null as string | null,
+        selectedBrand: null as string | null,
         searchQuery: '',
         albums: [] as Album[],
         allAlbums: [] as Album[],
@@ -64,15 +65,16 @@ export const useCatalogStore = defineStore('catalog', {
             this.isLoading = false;
         },
 
-        async selectCategory(category: string) {
+        async selectCategory(category: string, brand?: string) {
             this.selectedCategory = category;
+            this.selectedBrand = brand || null;
             this.searchQuery = ''; // Reset search on navigation
             await this.loadAlbums();
         },
 
         async loadAlbums() {
             if (!this.selectedCategory) return;
-            this.albums = await catalogService.getAlbumsByCategory(this.selectedCategory);
+            this.albums = await catalogService.getAlbumsByCategory(this.selectedCategory, this.selectedBrand || undefined);
         },
 
         openAlbum(album: Album) {
