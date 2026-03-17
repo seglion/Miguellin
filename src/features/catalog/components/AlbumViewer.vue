@@ -52,7 +52,7 @@ const getImageUrl = (photo: any) => {
         
         <aside class="album-sidebar">
           <div class="meta">
-            <div class="category-tag sticker">{{ catalogStore.selectedAlbum.category }}</div>
+            <div class="category-tag sticker">{{ catalogStore.selectedAlbum.brand || catalogStore.selectedAlbum.category }}</div>
             <h2 class="title">{{ catalogStore.selectedAlbum.title }}</h2>
             
             <div v-if="catalogStore.selectedAlbum.price" class="price-box jagged-edge">

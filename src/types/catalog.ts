@@ -10,6 +10,8 @@ export interface Album {
     originalTitle?: string;
     url: string;
     category: string;
+    brand?: string;
+    model?: string;
     parent_category?: string | null;
     sub_category?: string | null;
     batch?: string;

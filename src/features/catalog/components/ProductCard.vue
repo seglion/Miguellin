@@ -30,7 +30,7 @@ const getCoverImage = (album: Album) => {
     </div>
     
     <div class="info">
-      <div class="brand-badge">{{ album.category }}</div>
+      <div class="brand-badge">{{ album.brand || album.category }}</div>
       <h3 class="name">{{ album.title }}</h3>
       <div class="meta-row">
         <div class="id-tag">REF_{{ album.id }}</div>
