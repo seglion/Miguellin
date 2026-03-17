@@ -50,11 +50,30 @@ const handleCategoryClick = (cat: string, parentName?: string) => {
 
 watch(() => catalogStore.selectedCategory, (newCat) => {
   if (!newCat) return;
-  catalogStore.categoryItems.forEach(parent => {
-    if (parent.children && parent.children.some(c => c.name === newCat)) {
-      expandedParents.value.add(parent.name);
-    }
+  
+  // 1. Check if it's a parent category itself
+  const isParent = catalogStore.categoryItems.some(p => p.name === newCat);
+  if (isParent) {
+    expandedParents.value.add(newCat);
+    return;
+  }
+
+  // 2. If it's a child, check if any already expanded parent contains it
+  const alreadyVisible = Array.from(expandedParents.value).some(pName => {
+    const parent = catalogStore.categoryItems.find(p => p.name === pName);
+    return parent?.children?.some(c => c.name === newCat);
   });
+
+  if (alreadyVisible) return;
+
+  // 3. Otherwise, find the FIRST matching parent and expand it
+  const parentToExpand = catalogStore.categoryItems.find(parent => 
+    parent.children?.some(c => c.name === newCat)
+  );
+  
+  if (parentToExpand) {
+    expandedParents.value.add(parentToExpand.name);
+  }
 }, { immediate: true });
 
 watch([() => authStore.isLoggedIn, () => catalogStore.isViewerOpen], ([shown, viewerOpen]) => {
