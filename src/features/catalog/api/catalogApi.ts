@@ -70,6 +70,10 @@ class CatalogService {
                 if (isExplicit) {
                     if (value >= 10 && value <= 5000) return value;
                 } else {
+                    // Blacklist common model numbers/years from being treated as prices
+                    const blacklist = [2010, 2002, 2023, 2024, 2025, 1906, 990, 991, 992, 993, 327, 550, 530];
+                    if (blacklist.includes(value)) continue;
+
                     // Less explicit patterns (Batch/Folder) need tighter range
                     if (value >= 80 && value <= 1500) return value;
                 }
