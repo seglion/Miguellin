@@ -1,16 +1,5 @@
 [
   {
-    "name": "",
-    "url": "",
-    "children": [
-      {
-        "name": "OTHERS",
-        "url": "",
-        "children": []
-      }
-    ]
-  },
-  {
     "name": "ADIDAS",
     "url": "",
     "children": [
@@ -108,6 +97,11 @@
     "url": "",
     "children": [
       {
+        "name": "CASUAL OTHERS OTHERS",
+        "url": "",
+        "children": []
+      },
+      {
         "name": "GENERAL",
         "url": "",
         "children": []
@@ -125,47 +119,6 @@
       },
       {
         "name": "NIKE OTHERS",
-        "url": "",
-        "children": []
-      }
-    ]
-  },
-  {
-    "name": "ASICS",
-    "url": "",
-    "children": [
-      {
-        "name": "ASICS OTHERS",
-        "url": "",
-        "children": []
-      },
-      {
-        "name": "GEL-",
-        "url": "",
-        "children": []
-      },
-      {
-        "name": "GEL-CUMULUS",
-        "url": "",
-        "children": []
-      },
-      {
-        "name": "GEL-KAYANO",
-        "url": "",
-        "children": []
-      },
-      {
-        "name": "GEL-NIMBUS",
-        "url": "",
-        "children": []
-      },
-      {
-        "name": "GEL-NYC",
-        "url": "",
-        "children": []
-      },
-      {
-        "name": "GENERAL",
         "url": "",
         "children": []
       }
@@ -371,16 +324,63 @@
     ]
   },
   {
-    "name": "GOLDEN GOOSE",
+    "name": "GENERIC",
     "url": "",
     "children": [
+      {
+        "name": "GEL-",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "GEL-CUMULUS",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "GEL-KAYANO",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "GEL-NIMBUS",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "GEL-NYC",
+        "url": "",
+        "children": []
+      },
       {
         "name": "GENERAL",
         "url": "",
         "children": []
       },
       {
+        "name": "OTHERS",
+        "url": "",
+        "children": []
+      }
+    ]
+  },
+  {
+    "name": "GOLDEN",
+    "url": "",
+    "children": [
+      {
         "name": "GGDB",
+        "url": "",
+        "children": []
+      }
+    ]
+  },
+  {
+    "name": "GOLDEN GOOSE",
+    "url": "",
+    "children": [
+      {
+        "name": "GENERAL",
         "url": "",
         "children": []
       }
@@ -492,7 +492,12 @@
     "url": "",
     "children": [
       {
-        "name": "LV SKATE",
+        "name": "GENERAL",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "SKATE",
         "url": "",
         "children": []
       }
@@ -518,12 +523,7 @@
         "children": []
       },
       {
-        "name": "LV",
-        "url": "",
-        "children": []
-      },
-      {
-        "name": "LV TRAINER",
+        "name": "TRAINER",
         "url": "",
         "children": []
       }
@@ -668,11 +668,6 @@
         "children": []
       },
       {
-        "name": "AIR MAX PLUS",
-        "url": "",
-        "children": []
-      },
-      {
         "name": "BLAZER",
         "url": "",
         "children": []
@@ -734,7 +729,72 @@
     "url": "",
     "children": [
       {
+        "name": "AIR FORCE",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "AIR MAX",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "AIR MAX PLUS",
+        "url": "",
+        "children": []
+      },
+      {
         "name": "GENERAL",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "JORDAN",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "JORDAN HIGH",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "JORDAN LOW",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "JORDAN MID",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "JORDAN OTHERS",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "NIKE OTHERS",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "PEGASUS",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "TRAVIS SCOTT",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "VOMERO",
+        "url": "",
+        "children": []
+      },
+      {
+        "name": "ZOOM",
         "url": "",
         "children": []
       }
