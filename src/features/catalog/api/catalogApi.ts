@@ -72,7 +72,13 @@ class CatalogService {
                 } else {
                     // Blacklist common model numbers, years, and large numbers that aren't prices
                     // Avoid numbers like 2024, 2025, 1906, 2002, 990, etc.
-                    const blacklist = [2024, 2025, 2023, 2022, 2021, 2010, 2002, 1906, 990, 991, 992, 993, 327, 550, 530, 2000, 1990];
+                    const blacklist = [
+                        2024, 2025, 2023, 2022, 2021, 2010, 
+                        2002, 1906, 990, 991, 992, 993, 327, 550, 530, 
+                        2000, 1990,
+                        // Yeezy models:
+                        350, 380, 450, 500, 700, 750
+                    ];
                     if (blacklist.includes(value)) continue;
                     
                     // Also blacklist any 4-digit number starting with 20 (likely a year)
@@ -147,13 +153,22 @@ class CatalogService {
                         .trim();
                 }
 
+                const cleanSubCat = this.cleanName(album.sub_category);
+                const cleanCat = this.cleanName(album.category);
+                
+                // Excluir SOLAMENTE si es la categoría 'GENERAL' o un 'OTHERS' literal sin marca.
+                // Queremos que 'OTRAS ADIDAS' SÍ pase el filtro.
+                if (cleanSubCat && (cleanSubCat.toUpperCase() === 'GENERAL' || cleanSubCat.toUpperCase() === 'OTHERS')) {
+                    continue;
+                }
+
                 cleanedCatalog[id] = {
                     ...album,
                     originalTitle: originalTitle,
                     title: this.cleanName(displayTitle) || originalTitle,
-                    category: this.cleanName(album.category),
+                    category: cleanCat,
                     parent_category: this.cleanName(album.parent_category),
-                    sub_category: this.cleanName(album.sub_category),
+                    sub_category: cleanSubCat,
                     batch: batch,
                     price: finalPrice
                 };
@@ -193,37 +208,38 @@ class CatalogService {
 
     async fetchCategories(): Promise<CategoryItem[]> {
         try {
-            const response = await fetch(`/data/categories.json?t=${Date.now()}`);
-            if (!response.ok) return [];
-            const data = await response.json();
+            const catalog = await this.fetchCatalog();
+            const merged = new Map<string, CategoryItem>();
 
-            const cleanAndMerge = (items: any[]): CategoryItem[] => {
-                const merged = new Map<string, CategoryItem>();
+            Object.values(catalog).forEach(album => {
+                const catName = album.category;
+                const subCatName = album.sub_category;
 
-                items.forEach(item => {
-                    const name = this.cleanName(item.name);
-                    if (!name) return;
+                if (!catName) return;
 
-                    if (merged.has(name)) {
-                        const existing = merged.get(name)!;
-                        if (item.children && Array.isArray(item.children)) {
-                            existing.children = cleanAndMerge([...(existing.children || []), ...item.children]);
-                        }
-                    } else {
-                        merged.set(name, {
-                            ...item,
-                            name: name,
-                            children: item.children && Array.isArray(item.children) ? cleanAndMerge(item.children) : []
-                        });
+                if (!merged.has(catName)) {
+                    merged.set(catName, { name: catName, url: '', children: [] });
+                }
+
+                if (subCatName) {
+                    const parent = merged.get(catName)!;
+                    if (!parent.children) parent.children = [];
+                    if (!parent.children.find(c => c.name === subCatName)) {
+                        parent.children.push({ name: subCatName, url: '', children: [] });
                     }
-                });
+                }
+            });
 
-                return Array.from(merged.values()).sort((a, b) => a.name.localeCompare(b.name));
-            };
+            const result = Array.from(merged.values()).sort((a, b) => a.name.localeCompare(b.name));
+            result.forEach(cat => {
+                if (cat.children) {
+                    cat.children.sort((a, b) => a.name.localeCompare(b.name));
+                }
+            });
 
-            return cleanAndMerge(data);
+            return result;
         } catch (e) {
-            console.error('Error loading categories hierarchy:', e);
+            console.error('Error generating categories hierarchy:', e);
             return [];
         }
     }

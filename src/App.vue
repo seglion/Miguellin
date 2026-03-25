@@ -8,7 +8,7 @@ import { useAuthStore } from './features/catalog/hooks/useAuthStore';
 
 const catalogStore = useCatalogStore();
 const authStore = useAuthStore();
-const expandedParents = ref<Set<string>>(new Set());
+const expandedParent = ref<string | null>(null);
 const isSidebarOpen = ref(false);
 
 const showCatalog = computed(() => authStore.isLoggedIn);
@@ -31,17 +31,17 @@ const toggleSidebar = () => {
 };
 
 const toggleParent = (name: string) => {
-  if (expandedParents.value.has(name)) {
-    expandedParents.value.delete(name);
+  if (expandedParent.value === name) {
+    expandedParent.value = null; // Si ya está abierta, se cierra
   } else {
-    expandedParents.value.add(name);
+    expandedParent.value = name; // Abre la nueva y cierra la anterior automáticamente
   }
 };
 
 const handleCategoryClick = (cat: string, parentName?: string) => {
   catalogStore.selectCategory(cat);
   if (parentName) {
-    expandedParents.value.add(parentName);
+    expandedParent.value = parentName;
   }
   if (window.innerWidth < 768) {
     isSidebarOpen.value = false;
@@ -54,25 +54,17 @@ watch(() => catalogStore.selectedCategory, (newCat) => {
   // 1. Check if it's a parent category itself
   const isParent = catalogStore.categoryItems.some(p => p.name === newCat);
   if (isParent) {
-    expandedParents.value.add(newCat);
+    expandedParent.value = newCat;
     return;
   }
 
-  // 2. If it's a child, check if any already expanded parent contains it
-  const alreadyVisible = Array.from(expandedParents.value).some(pName => {
-    const parent = catalogStore.categoryItems.find(p => p.name === pName);
-    return parent?.children?.some(c => c.name === newCat);
-  });
-
-  if (alreadyVisible) return;
-
-  // 3. Otherwise, find the FIRST matching parent and expand it
+  // 2. Otherwise, find the FIRST matching parent and expand it
   const parentToExpand = catalogStore.categoryItems.find(parent => 
     parent.children?.some(c => c.name === newCat)
   );
   
   if (parentToExpand) {
-    expandedParents.value.add(parentToExpand.name);
+    expandedParent.value = parentToExpand.name;
   }
 }, { immediate: true });
 
@@ -127,15 +119,15 @@ watch([() => authStore.isLoggedIn, () => catalogStore.isViewerOpen], ([shown, vi
                   class="cat-item parent" 
                   :class="{ 
                     active: catalogStore.selectedCategory === parent.name,
-                    expanded: expandedParents.has(parent.name) 
+                    expanded: expandedParent === parent.name 
                   }"
                   @click="toggleParent(parent.name); handleCategoryClick(parent.name, parent.name)"
                 >
-                  <span class="marker">{{ expandedParents.has(parent.name) ? '●' : '○' }}</span>
+                  <span class="marker">{{ expandedParent === parent.name ? '●' : '○' }}</span>
                   <span class="label">{{ parent.name.toUpperCase() }}</span>
                 </div>
                 
-                <div v-if="parent.children && parent.children.length > 0 && expandedParents.has(parent.name)" class="sub-categories">
+                <div v-if="parent.children && parent.children.length > 0 && expandedParent === parent.name" class="sub-categories">
                   <div 
                     v-for="child in parent.children" 
                     :key="child.name"
