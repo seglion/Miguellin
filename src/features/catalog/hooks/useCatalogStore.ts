@@ -34,8 +34,23 @@ export const useCatalogStore = defineStore('catalog', {
                 filtered = state.albums;
             }
 
-            // Always sort by price descending (most expensive first)
-            return [...filtered].sort((a, b) => (b.price || 0) - (a.price || 0));
+            // New sorting logic:
+            // 1. Items up to 60€ first (sorted 60 -> 0)
+            // 2. Items over 60€ later (sorted max -> 61)
+            return [...filtered].sort((a, b) => {
+                const priceA = a.price || 0;
+                const priceB = b.price || 0;
+                
+                const isCheapA = priceA <= 60;
+                const isCheapB = priceB <= 60;
+
+                // Priority to items <= 60
+                if (isCheapA && !isCheapB) return -1;
+                if (!isCheapA && isCheapB) return 1;
+
+                // Within same bucket, maintain descending order (from high to low)
+                return priceB - priceA;
+            });
         }
     },
 
